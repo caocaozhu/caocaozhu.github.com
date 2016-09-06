@@ -1,123 +1,41 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-  <title>Hexo</title>
-  <meta name="author" content="John Doe">
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+extends base
+- var current_title = page.title || tag.name || category.name || site.title
 
-  
-  <meta property="og:site_name" content="Hexo"/>
+block title
+  title= config.title + " | " + config.subtitle
 
-  
-    <meta property="og:image" content="undefined"/>
-  
+block main
 
-  
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link href="/favicon.png" rel="icon">
-  
-  
-  <link rel="stylesheet" href="/css/bootstrap.min.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/highlight.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/google-fonts.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/responsive.css" media="screen" type="text/css">  
-  <link rel="stylesheet" href="/css/sidenav.css" media="screen" type="text/css">  
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  article
+    #index-main.container.entries
+      for post in page.posts.toArray()
+        .post-entry
+          .post-time= post.date.format(config.date_format)
+          .post-desc
+            .post-title
+              if post.link
+                  a(href=url_for(post.link),target="_blank", itemprop="url")= post.title
+              else
+                  a(href=url_for(post.path))= post.title
 
-  <script src="/js/jquery-2.0.3.min.js"></script>
+            .post-content
+              if post.description
+                != post.description
+              else if post.excerpt
+                != post.excerpt
+              else if post.content
+                - var br = post.content.indexOf('</p>')
+                if br < 0
+                  != post.content
+                else
+                  != post.content.substring(0, br + 4)
 
-  <!-- analytics -->
-  
+            .post-meta
+              if (post.tags && post.tags.length)
+                .post-tags
+                  != list_tags(post.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
+              if (post.categories && post.categories.length)
+                .post-categories
+                  != list_categories(post.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
 
-</head>
-
-<body id="body" data-spy="scroll" data-target=".toc">
-  <div class="container" id="container">
-	<div class="content">
-	  <div class="page-header">
-  <h1><a class="brand" href="#">Hexo</a></h1>
-</div>
-
-<div class="row page">
-	<div class="col-md-12">
-		<div class="panel-group" id="notebook">
-			
-			
-			
-			
-			
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<a class="panel-title" data-toggle="collapse" data-parent="#notebook" href="#Scratch">
-						<i class="fa fa-folder"></i> Scratch		   
-				</div>
-				
-					<div id="Scratch" class="panel-collapse collapse in">
-				
-					    <div class="panel-body">
-						    <ul class="post">
-			
-			
-			
-			
-			    
-			                    
-			                    <li class="post-list-item"><a href="/2016/09/06/hello/">hello</a></li>
-			                    
-			    
-			                    
-			                    <li class="post-list-item"><a href="/2016/09/06/hello-world/">Hello World</a></li>
-			                    
-			    
-				            </ul>
-				        </div>
-				    </div>
-			</div>
-			
-		</div><!-- accordion -->
-	</div>
-</div>
-
-	</div>
-  </div>
-  <div class="container-narrow">
-	<footer> <p>
-  &copy; 2016 John Doe
-  
-      with help from <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-wixo/">Wixo</a>.    
-</p> </footer>
-  </div> <!-- container-narrow -->
-  
-<a id="gotop" href="#">   
-  <span>▲</span> 
-</a>
-
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery.tableofcontents.min.js"></script>
-<script src="/js/tocgenerator.min.js"></script>
-<script src="/js/main.js"></script>
-
-
-
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
-</script>
-
-
-</body>
-</html>
+  include _partial/paginator.jade

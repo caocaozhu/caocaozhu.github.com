@@ -1,135 +1,40 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-  <title>hello | Hexo</title>
-  <meta name="author" content="John Doe">
-  
-  <meta name="description" content="哈哈哈哈哈">
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+extends base
 
-  <meta property="og:title" content="hello"/>
-  <meta property="og:site_name" content="Hexo"/>
+block title
+  title= page.title + " | " + config.title
 
-  
-    <meta property="og:image" content="undefined"/>
-  
+block main
 
-  
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link href="/favicon.png" rel="icon">
-  
-  
-  <link rel="stylesheet" href="/css/bootstrap.min.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/highlight.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/google-fonts.css" media="screen" type="text/css">
-  <link rel="stylesheet" href="/css/responsive.css" media="screen" type="text/css">  
-  <link rel="stylesheet" href="/css/sidenav.css" media="screen" type="text/css">  
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  // gallery that comes before the header
+  if page.photos
+     if page.photos.length
+      .article-gallery
+        .article-gallery-photos.container
+          for photo in page.photos
+            a.article-gallery-img.fancybox(href=url_for(photo), rel="gallery_" + page._id)
+              img(src=url_for(photo), itemprop="image")
 
-  <script src="/js/jquery-2.0.3.min.js"></script>
+  .wrapper
+    .container.post-header
+      h1: = page.title
 
-  <!-- analytics -->
-  
-
-</head>
-
-<body id="body" data-spy="scroll" data-target=".toc">
-  <div class="container" id="container">
-	<div class="content">
-	  <div class="page-header">		
-  <h1><a class="brand" href="/">Hexo</a><span class="split"></span><span class="title">hello</span><span class="date" id="title-date"><i class="fa fa-clock-o"></i> 2016-09-06</span></h1>
-</div>		
-
-<div class="row page">
-  <!-- cols -->	
-  
-  
-
-  
-	<div class="col-md-12">
-	  
-
-	  <!-- content -->
-	  <p>哈哈哈哈哈</p>
-	  
-
-	  <div>
-  		<center>
-		  <div class="pagination">
-<ul class="pagination">
-	
-	
-	
-	
-	
-	
-		
-			
-			
-		
-	
-		
-			
-			
-			
-	
-	
-		<li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>prev</a></li>
-	
-	<li><a href="/"><i class="fa fa-archive"></i>Home</a></li>
-	
-		<li class="next"><a href="/2016/09/06/hello-world/" class="alignright next">next<i class="fa fa-arrow-circle-o-right"></i></a></li>
-	
-</ul>
-</div>
-
-		</center>
-	  </div>
-	  
-	</div> <!-- col-md-9/col-md-12 -->
-	
-  </div><!-- row -->
-
-	</div>
-  </div>
-  <div class="container-narrow">
-	<footer> <p>
-  &copy; 2016 John Doe
-  
-      with help from <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-wixo/">Wixo</a>.    
-</p> </footer>
-  </div> <!-- container-narrow -->
-  
-<a id="gotop" href="#">   
-  <span>▲</span> 
-</a>
-
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery.tableofcontents.min.js"></script>
-<script src="/js/tocgenerator.min.js"></script>
-<script src="/js/main.js"></script>
+  .wrapper
+    .container.meta
+      .post-time= page.date.format(config.date_format)
+      if (page.categories && page.categories.length)
+        .post-categories
+          != list_categories(page.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
+      if (page.tags && page.tags.length)
+        .post-tags
+          != list_tags(page.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
 
 
+  article
+    .container.post
+      != page.content
 
+    // comment system
+    .container
+      hr
+      include _partial/comments
 
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
-</script>
-
-
-</body>
-</html>
