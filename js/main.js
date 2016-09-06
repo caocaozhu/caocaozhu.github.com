@@ -1,41 +1,123 @@
-function setTitleDate()
-{
-	var body_width = $("#body").css("width")
-	var container_width = $("#container").css("width")
-	var container_margin_right = $("#container").css("margin-right");
-	var container_padding_right = $("#container").css("padding-right");
-	//var container_right = parseInt(container_margin_right) + parseInt(container_padding_right);
-	var container_right = (parseInt(body_width) - parseInt(container_width))/2 + 10;
-	$("#title-date").css("right", container_right);
-}
+(function ($) {
+    // To top button
+    $("#back-to-top").on('click', function () {
+        $('body, html').animate({ scrollTop: 0 }, 600);
+    });
 
-$(document).ready(function() {
-	
-	$(window).scroll(function(){  //只要窗口滚动,就触发下面代码 
-        var scrollt = document.documentElement.scrollTop + document.body.scrollTop; //获取滚动后的高度 
-        if( scrollt >200 ){  //判断滚动后高度超过200px,就显示
-            $("#gotop").fadeIn(400); //淡出
-			$(".navbar").stop().fadeTo(400, 0.2);
-        }else{
-            $("#gotop").fadeOut(400); //如果返回或者没有超过,就淡入.必须加上stop()停止之前动画,否则会出现闪动
-			$(".navbar").stop().fadeTo(400, 1);
+    // Nav bar toggle
+    $('#main-nav-toggle').on('click', function () {
+        $('.nav-container-inner').slideToggle();
+    });
+
+    // Caption
+    $('.article-entry').each(function(i) {
+        $(this).find('img').each(function() {
+            if (this.alt) {
+                $(this).after('<span class="caption">' + this.alt + '</span>');
+            }
+
+            $(this).wrap('<a href="' + this.src + '" title="' + this.alt + '" class="gallery-item"></a>');
+        });
+
+    });
+    if (lightGallery) {
+        var options = {
+            selector: '.gallery-item',
+        };
+        lightGallery($('.article-entry')[0], options);
+        lightGallery($('.article-gallery')[0], options);
+    }
+
+    // Sidebar expend
+    $('#sidebar .sidebar-toggle').click(function () {
+        if($('#sidebar').hasClass('expend')) {
+            $('#sidebar').removeClass('expend');
+        } else {
+            $('#sidebar').addClass('expend');
         }
     });
-    $("#gotop").click(function(){ //当点击标签的时候,使用animate在200毫秒的时间内,滚到顶部
-        $("html,body").animate({scrollTop:"0px"},200);
-    });
-	$(".navbar").mouseenter(function(){
-		$(".navbar").fadeTo(100, 1);
-	});
-    $(".navbar").mouseleave(function(){
-		var scrollt = document.documentElement.scrollTop + document.body.scrollTop;
-		if ( scrollt > 200) {
-			$(".navbar").fadeTo(100, 0.2);
-		}
-	});	
-	setTitleDate();
-});
 
-$(window).resize(function () {
-	setTitleDate();
-})
+
+    // Remove extra main nav wrap
+    $('.main-nav-list > li').unwrap();
+
+    // Highlight current nav item
+    $('#main-nav > li > .main-nav-list-link').each(function () {
+        if($('.page-title-link').length > 0){
+            if ($(this).html().toUpperCase() == $('.page-title-link').html().toUpperCase()) {
+                $(this).addClass('current');
+            } else if ($(this).attr('href') == $('.page-title-link').attr('data-url')) {
+                $(this).addClass('current');
+            }
+        }
+    });
+
+    // Auto hide main nav menus
+    function autoHideMenus(){
+        var max_width = $('.nav-container-inner').width() - 10;
+        var main_nav_width = $('#main-nav').width();
+        var sub_nav_width = $('#sub-nav').width();
+        if (main_nav_width + sub_nav_width > max_width) {
+            // If more link not exists
+            if ($('.main-nav-more').length == 0) {
+                $(['<li class="main-nav-list-item top-level-menu main-nav-more">',
+                    '<a class="main-nav-list-link" href="javascript:;">More</a>',
+                    '<ul class="main-nav-list-child">',
+                    '</ul></li>'].join('')).appendTo($('#main-nav'));
+                // Bind hover event
+                $('.main-nav-more').hover(function () {
+                    if($(window).width() < 480) {
+                        return;
+                    }
+                    $(this).children('.main-nav-list-child').slideDown('fast');
+                }, function () {
+                    if($(window).width() < 480) {
+                        return;
+                    }
+                    $(this).children('.main-nav-list-child').slideUp('fast');
+                });
+            }
+            var child_count = $('#main-nav').children().length;
+            for (var i = child_count - 2; i >= 0; i--) {
+                var element = $('#main-nav').children().eq(i);
+                if (main_nav_width + sub_nav_width > max_width) {
+                    element.prependTo($('.main-nav-more > ul'));
+                    main_nav_width = $('#main-nav').width();
+                } else {
+                    return;
+                }
+            }
+        }
+        // Nav bar is wide enough
+        if ($('.main-nav-more').length > 0) {
+            $('.main-nav-more > ul').children().appendTo($('#main-nav'));
+            $('.main-nav-more').remove();
+        }
+    }
+    autoHideMenus();
+
+    $(window).resize(function () {
+        autoHideMenus();
+    });
+
+    // Fold second-level menu
+    $('.main-nav-list-item').hover(function () {
+        if ($(window).width() < 480) {
+            return;
+        }
+        $(this).children('.main-nav-list-child').slideDown('fast');
+    }, function () {
+        if ($(window).width() < 480) {
+            return;
+        }
+        $(this).children('.main-nav-list-child').slideUp('fast');
+    });
+
+    // Add second-level menu mark
+    $('.main-nav-list-item').each(function () {
+        if ($(this).find('.main-nav-list-child').length > 0) {
+            $(this).addClass('top-level-menu');
+        }
+    });
+
+})(jQuery);
